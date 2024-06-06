@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace MvvmToolKitDemo.ViewModels
 {
@@ -13,5 +15,14 @@ namespace MvvmToolKitDemo.ViewModels
 
         [ObservableProperty]
         private ObservableCollection<string> _validationNames = new() { "aaa" };
+
+        [ObservableProperty]
+        private SplitButtonViewModel? _splitButtonViewModel;
+
+        [RelayCommand]
+        private void PopupClose()
+        {
+            MessageBox.Show("aaaa");
+        }
     }
 }

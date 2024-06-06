@@ -1,8 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using MvvmToolKitDemo.Services;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.IO;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
