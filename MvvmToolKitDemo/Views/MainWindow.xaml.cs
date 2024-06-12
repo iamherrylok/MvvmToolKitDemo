@@ -1,6 +1,9 @@
-﻿using System.Globalization;
+﻿using MvvmToolKitDemo.UI;
+using MvvmToolKitDemo.UI.Helpers;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace MvvmToolKitDemo.Views
 {
@@ -12,6 +15,14 @@ namespace MvvmToolKitDemo.Views
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var editableTextBox = VisualHelper.GetChild<EditableTextBox>(sender as DependencyObject);
+
+            if (editableTextBox != null)
+                editableTextBox.InEditMode = true;
         }
     }
 

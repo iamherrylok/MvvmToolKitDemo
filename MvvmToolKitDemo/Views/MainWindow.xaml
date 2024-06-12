@@ -6,6 +6,7 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:MvvmToolKitDemo.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="clr-namespace:MvvmToolKitDemo.Models"
     xmlns:uc="clr-namespace:MvvmToolKitDemo.UserControls"
     xmlns:ui="clr-namespace:MvvmToolKitDemo.UI;assembly=MvvmToolKitDemo.UI"
     xmlns:vm="clr-namespace:MvvmToolKitDemo.ViewModels"
@@ -17,6 +18,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MvvmToolKitDemo.UI;component/Styles/EditableTextBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MvvmToolKitDemo.UI;component/Styles/TreeListView.xaml" />
                 <ResourceDictionary Source="PopupDataTemplates.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -25,9 +27,27 @@
         <vm:MainViewModel />
     </Window.DataContext>
     <StackPanel Background="Gray">
-        <TextBlock Text="{Binding Title}" />
+        <!--<TextBlock Text="{Binding Title}" />
         <Button Command="{Binding PopupCloseCommand}" Content="123456" />
         <uc:SplitButton DataContext="{Binding}" />
-        <uc:SplitButton DataContext="{Binding}" />
+        <uc:SplitButton DataContext="{Binding}" />-->
+        <ui:TreeListView
+            MinWidth="220"
+            MaxHeight="450"
+            ItemsSource="{Binding Groups}">
+            <ui:TreeListView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type model:Group}" ItemsSource="{Binding Items, Mode=OneTime}">
+                    <TextBlock Margin="3,2" Text="{Binding Name, Mode=OneTime}" />
+                </HierarchicalDataTemplate>
+
+                <DataTemplate DataType="{x:Type model:Item}">
+                    <TextBlock
+                        Margin="3,2"
+                        Text="{Binding Name, Mode=OneTime}"
+                        ToolTip="{Binding Name, Mode=OneTime}" />
+                </DataTemplate>
+            </ui:TreeListView.Resources>
+
+        </ui:TreeListView>
     </StackPanel>
 </Window>

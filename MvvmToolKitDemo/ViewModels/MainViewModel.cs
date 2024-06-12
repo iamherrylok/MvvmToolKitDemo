@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MvvmToolKitDemo.Models;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -18,6 +19,15 @@ namespace MvvmToolKitDemo.ViewModels
 
         [ObservableProperty]
         private SplitButtonViewModel? _splitButtonViewModel;
+
+        [ObservableProperty]
+        private ObservableCollection<Group> _groups = [];
+
+        public MainViewModel()
+        {
+            for (int i = 0; i < 20; i++)
+                _groups.Add(new Group(i.ToString()));
+        }
 
         [RelayCommand]
         private void PopupClose()
