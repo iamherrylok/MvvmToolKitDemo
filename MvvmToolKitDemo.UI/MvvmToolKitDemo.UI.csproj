@@ -7,4 +7,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="PackIconFactory.cs~RF64b80e.TMP" />
+  </ItemGroup>
+
 </Project>
