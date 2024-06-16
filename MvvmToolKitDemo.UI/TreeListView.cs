@@ -103,10 +103,10 @@ namespace MvvmToolKitDemo.UI
             if (item.IsExpanded && InternalItemsSource is { } itemsSource)
             {
                 int index = ItemContainerGenerator.IndexFromContainer(item);
-                if (index < 0) return;
+                if (index < 0) 
+                    return;
 
                 int parentLevel = itemsSource.GetLevel(index);
-                // We push the index forward by 1 to be on the first element of the item's children
                 index++;
                 int adjustedIndex;
                 switch (e.Action)
@@ -114,9 +114,7 @@ namespace MvvmToolKitDemo.UI
                     case NotifyCollectionChangedAction.Add:
                         adjustedIndex = index + GetChildrenAndGrandChildrenCountOfPriorSiblings(itemsSource, index, e.NewStartingIndex);
                         for (int i = 0; i < e.NewItems?.Count; i++)
-                        {
                             itemsSource.InsertWithLevel(e.NewStartingIndex + i + adjustedIndex, e.NewItems[i]!, parentLevel + 1);
-                        }
                         break;
                     case NotifyCollectionChangedAction.Remove:
                         adjustedIndex = index + GetChildrenAndGrandChildrenCountOfPriorSiblings(itemsSource, index, e.OldStartingIndex); ;
@@ -162,18 +160,15 @@ namespace MvvmToolKitDemo.UI
                 }
             }
 
-            /* Helper method used to determine the number of visible items that are prior siblings
-             * or children/grand-children of expanded siblings.
-             *
-             * This is used to determine the correct offset into the InternalItemsSource when adding/removing items
-             */
-            static int GetChildrenAndGrandChildrenCountOfPriorSiblings(TreeListViewItemsCollection collection, int startingIndex, int expectedPriorSiblingCount)
+            static int GetChildrenAndGrandChildrenCountOfPriorSiblings(
+                TreeListViewItemsCollection collection, 
+                int startingIndex, 
+                int expectedPriorSiblingCount)
             {
                 int childrenAndGrandChildrenCount = 0;
                 int index = 0;
                 int siblingCount = 0;
 
-                // Determine the level expected of siblings (used for comparison)
                 int siblingLevel = collection.GetLevel(startingIndex - 1) + 1;
 
                 // Iterate while we haven't:

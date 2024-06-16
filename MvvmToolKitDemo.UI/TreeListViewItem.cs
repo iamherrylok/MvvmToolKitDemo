@@ -13,8 +13,20 @@ namespace MvvmToolKitDemo.UI
     {
         internal const string ContentPresenterPart = "PART_ContentPresenter";
 
-        public TreeListViewItem()
-        { }
+        public static readonly DependencyProperty IsExpandedProperty;
+        public static readonly DependencyProperty HasItemsProperty;
+        public static readonly DependencyProperty LevelProperty;
+        public static readonly DependencyProperty DisableExpandOnDoubleClickProperty;
+        internal static readonly DependencyProperty ChildrenProperty;
+
+        static TreeListViewItem()
+        {
+            IsExpandedProperty = DependencyProperty.Register(nameof(IsExpanded), typeof(bool), typeof(TreeListViewItem), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsExpandedChanged));
+            HasItemsProperty = DependencyProperty.Register(nameof(HasItems), typeof(bool), typeof(TreeListViewItem), new PropertyMetadata(false));
+            LevelProperty = DependencyProperty.Register(nameof(Level), typeof(int), typeof(TreeListViewItem), new PropertyMetadata(0));
+            DisableExpandOnDoubleClickProperty = DependencyProperty.Register(nameof(DisableExpandOnDoubleClick), typeof(bool), typeof(TreeListViewItem), new PropertyMetadata(false));
+            ChildrenProperty = DependencyProperty.Register(nameof(Children), typeof(IEnumerable), typeof(TreeListViewItem), new PropertyMetadata(null, OnChildrenChanged));
+        }
 
         public TreeListViewItem(TreeListView treeListView)
         {
@@ -22,26 +34,15 @@ namespace MvvmToolKitDemo.UI
         }
 
         private TreeListViewContentPresenter? ContentPresenter { get; set; }
+
         private TreeListView? TreeListView { get; set; }
 
-        public IEnumerable<object?> GetChildren() => Children?.OfType<object?>() ?? Array.Empty<object?>();
+        public IEnumerable<object?> GetChildren() => Children?.OfType<object?>() ?? [];
 
         public bool IsExpanded
         {
             get => (bool)GetValue(IsExpandedProperty);
             set => SetValue(IsExpandedProperty, value);
-        }
-
-        public static readonly DependencyProperty IsExpandedProperty =
-            DependencyProperty.Register(nameof(IsExpanded), typeof(bool), typeof(TreeListViewItem),
-                new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnIsExpandedChanged));
-
-        private static void OnIsExpandedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is TreeListViewItem item)
-            {
-                item.TreeListView?.ItemExpandedChanged(item);
-            }
         }
 
         public bool HasItems
@@ -50,19 +51,11 @@ namespace MvvmToolKitDemo.UI
             set => SetValue(HasItemsProperty, value);
         }
 
-        public static readonly DependencyProperty HasItemsProperty =
-            DependencyProperty.Register(nameof(HasItems), typeof(bool), typeof(TreeListViewItem), new PropertyMetadata(false));
-
         public int Level
         {
             get => (int)GetValue(LevelProperty);
             set => SetValue(LevelProperty, value);
         }
-
-        public static readonly DependencyProperty LevelProperty =
-            DependencyProperty.Register(nameof(Level), typeof(int), typeof(TreeListViewItem), new PropertyMetadata(0));
-
-
 
         public bool DisableExpandOnDoubleClick
         {
@@ -70,18 +63,19 @@ namespace MvvmToolKitDemo.UI
             set => SetValue(DisableExpandOnDoubleClickProperty, value);
         }
 
-        public static readonly DependencyProperty DisableExpandOnDoubleClickProperty =
-            DependencyProperty.Register("DisableExpandOnDoubleClick", typeof(bool), typeof(TreeListViewItem), new PropertyMetadata(false));
-
         internal IEnumerable? Children
         {
             get => (IEnumerable?)GetValue(ChildrenProperty);
             set => SetValue(ChildrenProperty, value);
         }
 
-        internal static readonly DependencyProperty ChildrenProperty =
-            DependencyProperty.Register(nameof(Children), typeof(IEnumerable), typeof(TreeListViewItem),
-                new PropertyMetadata(null, OnChildrenChanged));
+        private static void OnIsExpandedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is TreeListViewItem item)
+            {
+                item.TreeListView?.ItemExpandedChanged(item);
+            }
+        }
 
         private static void OnChildrenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
