@@ -4,19 +4,23 @@ using System.Windows.Controls;
 using System.Windows;
 using MvvmToolKitDemo.UI.Automation.Peers;
 using MvvmToolKitDemo.UI.Internal;
+using System.Collections.ObjectModel;
 
 namespace MvvmToolKitDemo.UI
 {
     public class TreeListView : ListView
     {
         public static readonly DependencyProperty LevelIndentSizeProperty;
+        public static new readonly DependencyProperty SelectedItemsProperty;
 
         static TreeListView()
         {
             ItemsSourceProperty.OverrideMetadata(typeof(TreeListView), new FrameworkPropertyMetadata() { CoerceValueCallback = CoerceItemsSource });
 
             LevelIndentSizeProperty = DependencyProperty.Register(nameof(LevelIndentSize), typeof(double), typeof(TreeListView), new PropertyMetadata(16.0));
+            SelectedItemsProperty = DependencyProperty.Register(nameof(SelectedItems), typeof(ObservableCollection<object>), typeof(TreeListView), new PropertyMetadata(new ObservableCollection<object>(Array.Empty<object>())));
         }
+
 
         public double LevelIndentSize
         {
@@ -24,7 +28,24 @@ namespace MvvmToolKitDemo.UI
             set => SetValue(LevelIndentSizeProperty, value);
         }
 
+        public new ObservableCollection<object> SelectedItems
+        {
+            get => (ObservableCollection<object>)GetValue(SelectedItemsProperty);
+            set => SetValue(SelectedItemsProperty, value);
+        }
+
         internal TreeListViewItemsCollection? InternalItemsSource { get; set; }
+
+        private static object? CoerceItemsSource(DependencyObject d, object? baseValue)
+        {
+            if (d is TreeListView treeListView)
+            {
+                treeListView.InternalItemsSource = new(baseValue);
+
+                return treeListView.InternalItemsSource;
+            }
+            return baseValue;
+        }
 
         protected override AutomationPeer OnCreateAutomationPeer()
             => new TreeListViewAutomationPeer(this);
@@ -41,9 +62,9 @@ namespace MvvmToolKitDemo.UI
 
             if (element is TreeListViewItem treeListViewItem)
             {
-                int level = 0;
-                bool isExpanded = false;
-                int index = ItemContainerGenerator.IndexFromContainer(treeListViewItem);
+                var level = 0;
+                var isExpanded = false;
+                var index = ItemContainerGenerator.IndexFromContainer(treeListViewItem);
                 if (index >= 0 && InternalItemsSource is { } itemsSource)
                 {
                     level = itemsSource.GetLevel(index);
@@ -57,44 +78,51 @@ namespace MvvmToolKitDemo.UI
         protected override void ClearContainerForItemOverride(DependencyObject element, object item)
         {
             if (element is TreeListViewItem treeListViewItem)
-            {
                 treeListViewItem.ClearTreeListViewItem(item, this);
-            }
+
             base.ClearContainerForItemOverride(element, item);
         }
 
-        private static object? CoerceItemsSource(DependencyObject d, object? baseValue)
+        protected override void OnSelectionChanged(SelectionChangedEventArgs e)
         {
-            if (d is TreeListView treeListView)
+            base.OnSelectionChanged(e);
+
+            // TODO: selectedItems should be clear or not if itemsource changed
+            if (e.RemovedItems.Count > 0)
             {
-                var value = treeListView.InternalItemsSource = new(baseValue);
-                return value;
+                foreach (var removeItem in e.RemovedItems)
+                    SelectedItems.Remove(removeItem);
             }
-            return baseValue;
+
+            if (e.AddedItems.Count > 0)
+            {
+                foreach (var addItem in e.AddedItems)
+                {
+                    if (!SelectedItems.Contains(addItem))
+                        SelectedItems.Add(addItem);
+                }
+            }
         }
 
         internal void ItemExpandedChanged(TreeListViewItem item)
         {
             if (InternalItemsSource is { } itemsSource)
             {
-                int index = ItemContainerGenerator.IndexFromContainer(item);
-                //Issue 3572
-                if (index < 0) return;
+                var index = ItemContainerGenerator.IndexFromContainer(item);
+                if (index < 0)
+                    return;
+
                 var children = item.GetChildren().ToList();
-                bool isExpanded = item.IsExpanded;
+                var isExpanded = item.IsExpanded;
                 itemsSource.SetIsExpanded(index, isExpanded);
                 if (isExpanded)
                 {
                     int parentLevel = itemsSource.GetLevel(index);
                     for (int i = 0; i < children.Count; i++)
-                    {
                         itemsSource.InsertWithLevel(i + index + 1, children[i], parentLevel + 1);
-                    }
                 }
                 else
-                {
                     itemsSource.RemoveChildrenOfOffsetAdjustedItem(index);
-                }
             }
         }
 
@@ -102,11 +130,11 @@ namespace MvvmToolKitDemo.UI
         {
             if (item.IsExpanded && InternalItemsSource is { } itemsSource)
             {
-                int index = ItemContainerGenerator.IndexFromContainer(item);
-                if (index < 0) return;
+                var index = ItemContainerGenerator.IndexFromContainer(item);
+                if (index < 0)
+                    return;
 
-                int parentLevel = itemsSource.GetLevel(index);
-                // We push the index forward by 1 to be on the first element of the item's children
+                var parentLevel = itemsSource.GetLevel(index);
                 index++;
                 int adjustedIndex;
                 switch (e.Action)
@@ -137,10 +165,8 @@ namespace MvvmToolKitDemo.UI
 
                         int additionalOffset = 0;
                         if (e.OldStartingIndex < e.NewStartingIndex)
-                        {
-                            // When moving down, we need to move past expanded children/grand-children as well
                             additionalOffset = 1;
-                        }
+
                         int adjustedNewIndex = index + e.NewStartingIndex + GetChildrenAndGrandChildrenCountOfPriorSiblings(itemsSource, index, e.NewStartingIndex + additionalOffset);
 
                         itemsSource.Move(adjustedOldIndex, adjustedNewIndex);
@@ -162,11 +188,6 @@ namespace MvvmToolKitDemo.UI
                 }
             }
 
-            /* Helper method used to determine the number of visible items that are prior siblings
-             * or children/grand-children of expanded siblings.
-             *
-             * This is used to determine the correct offset into the InternalItemsSource when adding/removing items
-             */
             static int GetChildrenAndGrandChildrenCountOfPriorSiblings(TreeListViewItemsCollection collection, int startingIndex, int expectedPriorSiblingCount)
             {
                 int childrenAndGrandChildrenCount = 0;
@@ -205,16 +226,26 @@ namespace MvvmToolKitDemo.UI
             }
         }
 
-        public object? GetParent(object? item)
+        internal void MoveSelectionToParent(TreeListViewItem item)
         {
-            if (InternalItemsSource is { } itemSource &&
-                ItemContainerGenerator.ContainerFromItem(item) is { } container &&
-                ItemContainerGenerator.IndexFromContainer(container) is var index &&
-                index >= 0)
+            if ((IsKeyboardFocused || IsKeyboardFocusWithin)
+                && InternalItemsSource is { } itemsSource)
             {
-                return itemSource.GetParent(index);
+                var index = ItemContainerGenerator.IndexFromContainer(item);
+                if (index < 0) return;
+                var itemLevel = itemsSource.GetLevel(index);
+                for (var i = index; i > 0; i--)
+                {
+                    if (itemsSource.GetLevel(i) == itemLevel - 1)
+                    {
+                        SetSelectedItems(new[] { itemsSource[i] });
+                        if (ItemContainerGenerator.ContainerFromIndex(i) is TreeListViewItem container)
+                            container.Focus();
+
+                        break;
+                    }
+                }
             }
-            return null;
         }
 
         private List<object?> GetExpandedChildrenAndGrandChildren(object? dataItem)
@@ -224,34 +255,23 @@ namespace MvvmToolKitDemo.UI
                 return expandedChildren;
 
             expandedChildren.Add(dataItem);
+
             foreach (object? grandChild in container.GetChildren())
-            {
                 expandedChildren.AddRange(GetExpandedChildrenAndGrandChildren(grandChild));
-            }
+
             return expandedChildren;
         }
 
-        internal void MoveSelectionToParent(TreeListViewItem item)
-        {
-            if ((IsKeyboardFocused || IsKeyboardFocusWithin)
-                && InternalItemsSource is { } itemsSource)
-            {
-                int index = ItemContainerGenerator.IndexFromContainer(item);
-                if (index < 0) return;
-                int itemLevel = itemsSource.GetLevel(index);
-                for (int i = index; i > 0; i--)
-                {
-                    if (itemsSource.GetLevel(i) == itemLevel - 1)
-                    {
-                        SetSelectedItems(new[] { itemsSource[i] });
-                        if (ItemContainerGenerator.ContainerFromIndex(i) is TreeListViewItem container)
-                        {
-                            container.Focus();
-                        }
-                        break;
-                    }
-                }
-            }
-        }
+        //public object? GetParent(object? item)
+        //{
+        //    if (InternalItemsSource is { } itemSource &&
+        //        ItemContainerGenerator.ContainerFromItem(item) is { } container &&
+        //        ItemContainerGenerator.IndexFromContainer(container) is var index &&
+        //        index >= 0)
+        //    {
+        //        return itemSource.GetParent(index);
+        //    }
+        //    return null;
+        //}
     }
 }

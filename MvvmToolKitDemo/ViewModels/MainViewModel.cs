@@ -23,6 +23,9 @@ namespace MvvmToolKitDemo.ViewModels
         [ObservableProperty]
         private ObservableCollection<Group> _groups = [];
 
+        [ObservableProperty]
+        private ObservableCollection<object> _selectedGroups = []; 
+
         public MainViewModel()
         {
             for (int i = 0; i < 20; i++)

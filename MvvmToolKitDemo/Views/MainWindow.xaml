@@ -26,7 +26,7 @@
     <Window.DataContext>
         <vm:MainViewModel />
     </Window.DataContext>
-    <StackPanel Background="Gray">
+    <Grid Background="Gray">
         <!--<TextBlock Text="{Binding Title}" />
         <Button Command="{Binding PopupCloseCommand}" Content="123456" />
         <uc:SplitButton DataContext="{Binding}" />
@@ -34,7 +34,9 @@
         <ui:TreeListView
             MinWidth="220"
             MaxHeight="450"
-            ItemsSource="{Binding Groups}">
+            ItemsSource="{Binding Groups}"
+            VirtualizingPanel.IsVirtualizing="True"
+            VirtualizingPanel.VirtualizationMode="Recycling">
             <ui:TreeListView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type model:Group}" ItemsSource="{Binding Items, Mode=OneTime}">
                     <TextBlock Margin="3,2" Text="{Binding Name, Mode=OneTime}" />
@@ -49,5 +51,5 @@
             </ui:TreeListView.Resources>
 
         </ui:TreeListView>
-    </StackPanel>
+    </Grid>
 </Window>
