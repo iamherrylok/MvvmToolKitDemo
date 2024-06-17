@@ -7,6 +7,7 @@ namespace MvvmToolKitDemo.UI.Converters
     public class NullableToVisibilityConverter : IValueConverter
     {
         public Visibility NullValue { get; set; } = Visibility.Collapsed;
+
         public Visibility NotNullValue { get; set; } = Visibility.Visible;
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

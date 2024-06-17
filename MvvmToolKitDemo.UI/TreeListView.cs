@@ -142,9 +142,7 @@ namespace MvvmToolKitDemo.UI
                     case NotifyCollectionChangedAction.Add:
                         adjustedIndex = index + GetChildrenAndGrandChildrenCountOfPriorSiblings(itemsSource, index, e.NewStartingIndex);
                         for (int i = 0; i < e.NewItems?.Count; i++)
-                        {
                             itemsSource.InsertWithLevel(e.NewStartingIndex + i + adjustedIndex, e.NewItems[i]!, parentLevel + 1);
-                        }
                         break;
                     case NotifyCollectionChangedAction.Remove:
                         adjustedIndex = index + GetChildrenAndGrandChildrenCountOfPriorSiblings(itemsSource, index, e.OldStartingIndex); ;
@@ -188,13 +186,15 @@ namespace MvvmToolKitDemo.UI
                 }
             }
 
-            static int GetChildrenAndGrandChildrenCountOfPriorSiblings(TreeListViewItemsCollection collection, int startingIndex, int expectedPriorSiblingCount)
+            static int GetChildrenAndGrandChildrenCountOfPriorSiblings(
+                TreeListViewItemsCollection collection, 
+                int startingIndex, 
+                int expectedPriorSiblingCount)
             {
                 int childrenAndGrandChildrenCount = 0;
                 int index = 0;
                 int siblingCount = 0;
 
-                // Determine the level expected of siblings (used for comparison)
                 int siblingLevel = collection.GetLevel(startingIndex - 1) + 1;
 
                 // Iterate while we haven't:
