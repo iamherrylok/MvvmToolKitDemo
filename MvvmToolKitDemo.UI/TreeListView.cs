@@ -17,7 +17,7 @@ namespace MvvmToolKitDemo.UI
         {
             ItemsSourceProperty.OverrideMetadata(typeof(TreeListView), new FrameworkPropertyMetadata() { CoerceValueCallback = CoerceItemsSource });
 
-            LevelIndentSizeProperty = DependencyProperty.Register(nameof(LevelIndentSize), typeof(double), typeof(TreeListView), new PropertyMetadata(16.0));
+            LevelIndentSizeProperty = DependencyProperty.Register(nameof(LevelIndentSize), typeof(double), typeof(TreeListView), new PropertyMetadata(24.0));
             SelectedItemsProperty = DependencyProperty.Register(nameof(SelectedItems), typeof(ObservableCollection<object>), typeof(TreeListView), new PropertyMetadata(new ObservableCollection<object>(Array.Empty<object>())));
         }
 

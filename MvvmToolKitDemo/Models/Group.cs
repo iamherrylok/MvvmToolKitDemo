@@ -13,7 +13,7 @@ namespace MvvmToolKitDemo.Models
 
         public Group(string name)
         {
-            _name = $"Group {name}";
+            _name = $"GroupGroupGroupGroupGroupGroupGroup {name}";
 
             for (int i = 0; i < 20; i++)
                 _items.Add(new Item(i.ToString()));

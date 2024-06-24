@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.CodeAnalysis.CSharp;
 using MvvmToolKitDemo.Models;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 
 namespace MvvmToolKitDemo.ViewModels
@@ -24,7 +26,7 @@ namespace MvvmToolKitDemo.ViewModels
         private ObservableCollection<Group> _groups = [];
 
         [ObservableProperty]
-        private ObservableCollection<object> _selectedGroups = []; 
+        private ObservableCollection<object> _selectedGroups = [];
 
         public MainViewModel()
         {

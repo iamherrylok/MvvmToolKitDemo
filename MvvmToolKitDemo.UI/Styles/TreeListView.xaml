@@ -5,7 +5,7 @@
     xmlns:internal="clr-namespace:MvvmToolKitDemo.UI.Internal"
     xmlns:local="clr-namespace:MvvmToolKitDemo.UI">
 
-    <Style x:Key="MaterialDesignTreeListViewToggleButtonStyle" TargetType="{x:Type ToggleButton}">
+    <Style x:Key="TreeListViewToggleButtonStyle" TargetType="{x:Type ToggleButton}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Height" Value="16" />
@@ -102,10 +102,16 @@
     <Style x:Key="MaterialDesignTreeListViewItem" TargetType="{x:Type local:TreeListViewItem}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="8" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource MaterialDesignTreeListViewItemFocusVisual}" />
         <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type local:TreeListView}}}" />
         <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
-        <Setter Property="Padding" Value="8" />
+        <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+        <Setter Property="local:TreeViewAssist.ExpanderSize" Value="16" />
+        <Setter Property="local:TreeViewAssist.ShowSelection" Value="True" />
+        <Setter Property="local:TreeViewAssist.HasNoItemsExpanderVisibility" Value="{Binding RelativeSource={RelativeSource AncestorType=local:TreeListView}, Path=(local:TreeViewAssist.HasNoItemsExpanderVisibility)}" />
+        <Setter Property="local:TreeViewAssist.ItemHoverBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TreeListView}}, Path=(local:TreeViewAssist.ItemHoverBackground)}" />
+        <Setter Property="local:TreeViewAssist.ItemSelectedBackground" Value="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:TreeListView}}, Path=(local:TreeViewAssist.ItemSelectedBackground)}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:TreeListViewItem}">
@@ -115,109 +121,44 @@
                         <converters:BrushRoundConverter x:Key="BrushRoundConverter" />
                         <converters:MathMultipleConverter x:Key="MathMlpMultipleConverter" Operation="Multiply" />
                     </ControlTemplate.Resources>
-                    <Grid>
-                        <Grid.Margin>
-                            <MultiBinding Converter="{StaticResource TreeListViewIndentConverter}">
-                                <Binding Path="LevelIndentSize" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:TreeListView}}" />
-                                <Binding Path="Level" RelativeSource="{RelativeSource TemplatedParent}" />
-                            </MultiBinding>
-                        </Grid.Margin>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <ToggleButton
-                            x:Name="Expander"
-                            Width="{TemplateBinding local:TreeViewAssist.ExpanderSize}"
-                            Height="{TemplateBinding local:TreeViewAssist.ExpanderSize}"
-                            Margin="8,0,8,0"
-                            VerticalAlignment="Center"
-                            ClickMode="Press"
-                            Foreground="{TemplateBinding Foreground}"
-                            IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
-                            Style="{StaticResource MaterialDesignTreeListViewToggleButtonStyle}" />
+                    <Border
+                        x:Name="ItemBorder"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="4">
+                        <Grid>
+                            <Grid.Margin>
+                                <MultiBinding Converter="{StaticResource TreeListViewIndentConverter}">
+                                    <Binding Path="LevelIndentSize" RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type local:TreeListView}}" />
+                                    <Binding Path="Level" RelativeSource="{RelativeSource TemplatedParent}" />
+                                </MultiBinding>
+                            </Grid.Margin>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <ToggleButton
+                                x:Name="Expander"
+                                Width="{TemplateBinding local:TreeViewAssist.ExpanderSize}"
+                                Height="{TemplateBinding local:TreeViewAssist.ExpanderSize}"
+                                Margin="8,0,8,0"
+                                VerticalAlignment="Center"
+                                ClickMode="Press"
+                                Foreground="{TemplateBinding Foreground}"
+                                IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
+                                Style="{StaticResource TreeListViewToggleButtonStyle}" />
 
-                        <Border
-                            x:Name="MouseOverBorder"
-                            Grid.Column="1"
-                            Grid.ColumnSpan="2"
-                            Background="{TemplateBinding Foreground,
-                                                         Converter={StaticResource BrushRoundConverter}}"
-                            IsHitTestVisible="False"
-                            Opacity="0" />
-
-                        <Border
-                            x:Name="SelectedBorder"
-                            Grid.Column="1"
-                            Grid.ColumnSpan="2"
-                            Background="{TemplateBinding Foreground,
-                                                         Converter={StaticResource BrushRoundConverter}}"
-                            IsHitTestVisible="False"
-                            Opacity="0" />
-
-                        <Grid
-                            x:Name="ContentGrid"
-                            Grid.Column="1"
-                            Grid.ColumnSpan="2"
-                            Background="{TemplateBinding Background}">
-                            <Border>
-                                <internal:TreeListViewContentPresenter x:Name="PART_ContentPresenter" ContentSource="Content" />
-                            </Border>
+                            <Grid
+                                x:Name="ContentGrid"
+                                Grid.Column="1"
+                                HorizontalAlignment="Left"
+                                Background="{TemplateBinding Background}">
+                                <Border>
+                                    <internal:TreeListViewContentPresenter x:Name="PART_ContentPresenter" ContentSource="Content" />
+                                </Border>
+                            </Grid>
                         </Grid>
+                    </Border>
 
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup Name="CommonStates">
-                                <VisualStateGroup.Transitions>
-                                    <VisualTransition GeneratedDuration="0:0:0.3" To="Normal">
-                                        <VisualTransition.GeneratedEasingFunction>
-                                            <CubicEase EasingMode="EaseOut" />
-                                        </VisualTransition.GeneratedEasingFunction>
-                                    </VisualTransition>
-                                </VisualStateGroup.Transitions>
-                                <VisualState Name="Normal" />
-                                <VisualState Name="MouseOver">
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="MouseOverBorder"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0.1"
-                                            Duration="0" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="MouseOverBorder"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0.1"
-                                            Duration="0" />
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState Name="Disabled" />
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="SelectionStates">
-                                <VisualStateGroup.Transitions>
-                                    <VisualTransition GeneratedDuration="0:0:0.6" />
-                                </VisualStateGroup.Transitions>
-                                <VisualState Name="Selected">
-                                    <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="SelectedBorder"
-                                            Storyboard.TargetProperty="Opacity"
-                                            To="0.18"
-                                            Duration="0" />
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState Name="Unselected" />
-                            </VisualStateGroup>
-                            <VisualStateGroup x:Name="ExpansionStates">
-                                <VisualState x:Name="Expanded" />
-                                <VisualState x:Name="Collapsed" />
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                    </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="HasItems" Value="false">
                             <Setter TargetName="Expander" Property="Visibility" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(local:TreeViewAssist.HasNoItemsExpanderVisibility)}" />
@@ -226,17 +167,18 @@
                             <Setter Property="Opacity" Value=".56" />
                         </Trigger>
                         <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=(local:TreeViewAssist.ShowSelection)}" Value="False">
-                            <Setter TargetName="MouseOverBorder" Property="Visibility" Value="Collapsed" />
-                            <Setter TargetName="SelectedBorder" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="ItemBorder" Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=(local:TreeViewAssist.ItemHoverBackground)}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="ItemBorder" Property="Background" Value="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=(local:TreeViewAssist.ItemSelectedBackground)}" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
-        <Setter Property="local:TreeViewAssist.ExpanderSize" Value="16" />
-        <Setter Property="local:TreeViewAssist.HasNoItemsExpanderVisibility" Value="{Binding RelativeSource={RelativeSource AncestorType=local:TreeListView}, Path=(local:TreeViewAssist.HasNoItemsExpanderVisibility)}" />
-        <Setter Property="local:TreeViewAssist.ShowSelection" Value="True" />
     </Style>
 
     <Style x:Key="MaterialDesignTreeListView" TargetType="{x:Type local:TreeListView}">
@@ -249,8 +191,11 @@
         <Setter Property="ScrollViewer.PanningMode" Value="Both" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
         <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="local:TreeViewAssist.HasNoItemsExpanderVisibility" Value="Hidden" />
         <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
         <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
+        <Setter Property="local:TreeViewAssist.ItemHoverBackground" Value="Red" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:TreeListView}">
@@ -281,8 +226,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <!--<Setter Property="local:TreeViewAssist.HasNoItemsExpanderVisibility" Value="Hidden" />-->
         <Style.Triggers>
             <Trigger Property="VirtualizingPanel.IsVirtualizing" Value="true">
                 <Setter Property="ItemsPanel">

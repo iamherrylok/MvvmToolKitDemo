@@ -9,7 +9,7 @@ using System.Windows.Threading;
 namespace MvvmToolKitDemo.UI
 {
     [TemplatePart(Name = ContentPresenterPart, Type = typeof(TreeListViewContentPresenter))]
-    public class TreeListViewItem : ListViewItem
+    public class TreeListViewItem(TreeListView treeListView) : ListViewItem
     {
         internal const string ContentPresenterPart = "PART_ContentPresenter";
 
@@ -28,14 +28,9 @@ namespace MvvmToolKitDemo.UI
             ChildrenProperty = DependencyProperty.Register(nameof(Children), typeof(IEnumerable), typeof(TreeListViewItem), new PropertyMetadata(null, OnChildrenChanged));
         }
 
-        public TreeListViewItem(TreeListView treeListView)
-        {
-            TreeListView = treeListView;
-        }
-
         private TreeListViewContentPresenter? ContentPresenter { get; set; }
 
-        private TreeListView? TreeListView { get; set; }
+        private TreeListView? TreeListView { get; set; } = treeListView;
 
         public IEnumerable<object?> GetChildren() => Children?.OfType<object?>() ?? [];
 
@@ -184,13 +179,9 @@ namespace MvvmToolKitDemo.UI
                         break;
                     case Key.Left:
                         if (IsExpanded)
-                        {
                             IsExpanded = false;
-                        }
                         else
-                        {
                             TreeListView?.MoveSelectionToParent(this);
-                        }
                         e.Handled = true;
                         break;
                 }

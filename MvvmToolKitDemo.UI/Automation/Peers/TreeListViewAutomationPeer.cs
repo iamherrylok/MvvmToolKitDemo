@@ -3,12 +3,8 @@ using System.Windows.Controls;
 
 namespace MvvmToolKitDemo.UI.Automation.Peers
 {
-    public class TreeListViewAutomationPeer : ListViewAutomationPeer
+    public class TreeListViewAutomationPeer(TreeListView owner) : ListViewAutomationPeer(owner)
     {
-        public TreeListViewAutomationPeer(TreeListView owner) : base(owner)
-        {
-        }
-
         protected override AutomationControlType GetAutomationControlTypeCore() => AutomationControlType.Tree;
 
         protected override string GetClassNameCore() => "TreeListView";
@@ -17,6 +13,7 @@ namespace MvvmToolKitDemo.UI.Automation.Peers
         {
             ItemsControl owner = (ItemsControl)Owner;
             ItemCollection items = owner.Items;
+
             List<AutomationPeer>? children = null;
 
             if (items.Count > 0)
@@ -25,11 +22,8 @@ namespace MvvmToolKitDemo.UI.Automation.Peers
                 for (int i = 0; i < items.Count; i++)
                 {
                     TreeListViewItem? treeViewItem = owner.ItemContainerGenerator.ContainerFromIndex(i) as TreeListViewItem;
-                    //We grab top level items only
                     if (treeViewItem is { Level: 0 })
-                    {
                         children.Add(CreateItemAutomationPeer(items[i]));
-                    }
                 }
             }
             return children;
@@ -41,13 +35,12 @@ namespace MvvmToolKitDemo.UI.Automation.Peers
         }
     }
 
-    public class TreeListViewItemAutomationPeer : ListBoxItemAutomationPeer
+    public class TreeListViewItemAutomationPeer(object owner, SelectorAutomationPeer selectorAutomationPeer) 
+        : ListBoxItemAutomationPeer(owner, selectorAutomationPeer)
     {
-        public TreeListViewItemAutomationPeer(object owner, SelectorAutomationPeer selectorAutomationPeer)
-            : base(owner, selectorAutomationPeer)
-        {
+        protected override AutomationControlType GetAutomationControlTypeCore() => AutomationControlType.TreeItem;
 
-        }
+        protected override string GetClassNameCore() => "TreeListViewItem";
 
         protected override List<AutomationPeer> GetChildrenCore()
         {
@@ -72,13 +65,9 @@ namespace MvvmToolKitDemo.UI.Automation.Peers
         public override object GetPattern(PatternInterface patternInterface)
         {
             if (patternInterface == PatternInterface.ExpandCollapse)
-            {
                 return this;
-            }
+
             return base.GetPattern(patternInterface);
         }
-
-        protected override AutomationControlType GetAutomationControlTypeCore() => AutomationControlType.TreeItem;
-        protected override string GetClassNameCore() => "TreeListViewItem";
     }
 }

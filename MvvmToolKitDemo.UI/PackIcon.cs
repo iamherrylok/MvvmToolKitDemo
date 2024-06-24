@@ -48,11 +48,11 @@ namespace MvvmToolKitDemo.UI
 
         private void UpdateData()
         {
-            var data = string.Empty;
+            string? data = string.Empty;
 
             _packIconMap.Value?.TryGetValue(Kind, out data);
 
-            Data = data;
+            Data = data ?? string.Empty;
         }
     }
 }

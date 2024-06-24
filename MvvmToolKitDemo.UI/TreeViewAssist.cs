@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
-using System.Windows;
+using System.Windows.Media;
 
 namespace MvvmToolKitDemo.UI
 {
@@ -151,6 +148,28 @@ namespace MvvmToolKitDemo.UI
         public static readonly DependencyProperty HasNoItemsExpanderVisibilityProperty =
             DependencyProperty.RegisterAttached("HasNoItemsExpanderVisibility", typeof(Visibility), typeof(TreeViewAssist), new PropertyMetadata(Visibility.Hidden));
 
+        #endregion
+
+        #region ItemHoverBackground
+        public static Brush GetItemHoverBackground(DependencyObject obj)
+            => (Brush)obj.GetValue(ItemHoverBackgroundProperty);
+
+        public static void SetItemHoverBackground(DependencyObject obj, Brush value) 
+            => obj.SetValue(ItemHoverBackgroundProperty, value);
+
+        public static readonly DependencyProperty ItemHoverBackgroundProperty =
+            DependencyProperty.RegisterAttached("ItemHoverBackground", typeof(Brush), typeof(TreeViewAssist), new PropertyMetadata(Brushes.Transparent));
+        #endregion
+
+        #region ItemSelectedBackground
+        public static Brush GetItemSelectedBackground(DependencyObject obj)
+            => (Brush)obj.GetValue(ItemSelectedBackgroundProperty);
+
+        public static void SetItemSelectedBackground(DependencyObject obj, Brush value)
+            => obj.SetValue(ItemSelectedBackgroundProperty, value);
+
+        public static readonly DependencyProperty ItemSelectedBackgroundProperty =
+            DependencyProperty.RegisterAttached("ItemSelectedBackground", typeof(Brush), typeof(TreeViewAssist), new PropertyMetadata(Brushes.Transparent));
         #endregion
     }
 }

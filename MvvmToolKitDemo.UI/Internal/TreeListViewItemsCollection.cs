@@ -6,8 +6,9 @@ namespace MvvmToolKitDemo.UI.Internal
 {
     public class TreeListViewItemsCollection : ObservableCollection<object?>
     {
-        private List<int> ItemLevels { get; } = new();
-        private List<bool> ItemIsExpanded { get; } = new();
+        private List<int> ItemLevels { get; } = [];
+
+        private List<bool> ItemIsExpanded { get; } = [];
 
         public TreeListViewItemsCollection(object? wrappedSource)
         {
@@ -18,9 +19,71 @@ namespace MvvmToolKitDemo.UI.Internal
                     Add(item);
                 }
             }
+
             if (wrappedSource is INotifyCollectionChanged newCollectionChanged)
             {
                 CollectionChangedEventManager.AddHandler(newCollectionChanged, ItemsSource_CollectionChanged);
+            }
+        }
+
+        private void ItemsSource_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    for (int i = 0; i < e.NewItems?.Count; i++)
+                    {
+                        Insert(e.NewStartingIndex + i, e.NewItems[i]!);
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    for (int i = 0; i < e.OldItems?.Count; i++)
+                    {
+                        RemoveAt(e.OldStartingIndex + i);
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Replace:
+                    for (int i = 0; i < e.NewItems?.Count; i++)
+                    {
+                        int newIndex = GetAbsoluteIndex(e.NewStartingIndex + i);
+                        if (newIndex >= 0)
+                        {
+                            ReplaceOffsetAdjustedItem(newIndex, e.NewItems[i]!);
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    for (int i = 0; i < e.NewItems?.Count; i++)
+                    {
+                        int oldIndex = GetAbsoluteIndex(e.OldStartingIndex + i);
+                        int newIndex = GetAbsoluteIndex(e.NewStartingIndex + i);
+                        if (oldIndex >= 0 && newIndex >= 0)
+                        {
+                            Move(oldIndex, newIndex);
+                        }
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    Clear();
+                    ItemLevels.Clear();
+                    foreach (object? item in sender as IEnumerable ?? Enumerable.Empty<object?>())
+                    {
+                        Add(item);
+                    }
+                    break;
+            }
+
+            int GetAbsoluteIndex(int relativeIndex)
+            {
+                for (int i = 0; i < ItemLevels.Count; i++)
+                {
+                    if (ItemLevels[i] == 0)
+                        relativeIndex--;
+
+                    if (relativeIndex < 0) 
+                        return i;
+                }
+                return -1;
             }
         }
 
@@ -245,66 +308,7 @@ namespace MvvmToolKitDemo.UI.Internal
             InsertWithLevel(index, item, level);
         }
 
-        private void ItemsSource_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-        {
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    for (int i = 0; i < e.NewItems?.Count; i++)
-                    {
-                        Insert(e.NewStartingIndex + i, e.NewItems[i]!);
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    for (int i = 0; i < e.OldItems?.Count; i++)
-                    {
-                        RemoveAt(e.OldStartingIndex + i);
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    for (int i = 0; i < e.NewItems?.Count; i++)
-                    {
-                        int newIndex = GetAbsoluteIndex(e.NewStartingIndex + i);
-                        if (newIndex >= 0)
-                        {
-                            ReplaceOffsetAdjustedItem(newIndex, e.NewItems[i]!);
-                        }
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                    for (int i = 0; i < e.NewItems?.Count; i++)
-                    {
-                        int oldIndex = GetAbsoluteIndex(e.OldStartingIndex + i);
-                        int newIndex = GetAbsoluteIndex(e.NewStartingIndex + i);
-                        if (oldIndex >= 0 && newIndex >= 0)
-                        {
-                            Move(oldIndex, newIndex);
-                        }
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    Clear();
-                    ItemLevels.Clear();
-                    foreach (object? item in sender as IEnumerable ?? Enumerable.Empty<object?>())
-                    {
-                        Add(item);
-                    }
-                    break;
-            }
-
-            int GetAbsoluteIndex(int relativeIndex)
-            {
-                for (int i = 0; i < ItemLevels.Count; i++)
-                {
-                    if (ItemLevels[i] == 0)
-                    {
-                        relativeIndex--;
-                    }
-                    if (relativeIndex < 0) return i;
-                }
-                return -1;
-            }
-        }
+       
     }
 
     file static class ListExtensions

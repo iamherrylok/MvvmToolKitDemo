@@ -12,7 +12,9 @@ namespace MvvmToolKitDemo.UI.Internal
         protected override void OnTemplateChanged(DataTemplate oldTemplate, DataTemplate newTemplate)
         {
             Template = newTemplate;
+
             base.OnTemplateChanged(oldTemplate, newTemplate);
+
             TemplateChanged?.Invoke(this, EventArgs.Empty);
         }
     }
