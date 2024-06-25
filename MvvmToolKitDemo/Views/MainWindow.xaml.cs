@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using MvvmToolKitDemo.UI;
+using MvvmToolKitDemo.UI.Helpers;
+using System.Globalization;
 using System.Runtime.Intrinsics.Arm;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +15,16 @@ namespace MvvmToolKitDemo.Views
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Rename(object sender, RoutedEventArgs e)
+        {
+            var treeViewItem = treeListView.ItemContainerGenerator.ContainerFromItem(treeListView.SelectedItem);
+
+            var editableTextBox = VisualHelper.GetChild<EditableTextBox>(treeViewItem!);
+
+            if (editableTextBox is { })
+                editableTextBox.InEditMode = true;
         }
     }
 }

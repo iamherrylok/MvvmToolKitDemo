@@ -7,9 +7,9 @@
             <Border BorderThickness="1" CornerRadius="4">
                 <AdornedElementPlaceholder />
             </Border>
-            <Border Background="Gray">
+            <Border Background="LightGray" CornerRadius="4">
                 <TextBlock
-                    Margin="5,0,0,0"
+                    Margin="4"
                     Foreground="Red"
                     Text="{Binding [0].ErrorContent}" />
             </Border>
@@ -17,20 +17,20 @@
     </ControlTemplate>
 
     <Style TargetType="{x:Type local:EditableTextBox}">
-        <Setter Property="Control.Background" Value="{DynamicResource TextInput.BackgroundBrush}" />
-        <Setter Property="Control.Foreground" Value="{DynamicResource TextInput.ForegroundBrush}" />
-        <Setter Property="Control.BorderBrush" Value="{DynamicResource TextInput.BorderBrush}" />
-        <Setter Property="Control.BorderThickness" Value="0" />
-        <Setter Property="TextBoxBase.SelectionBrush" Value="{DynamicResource TextInput.SelectionBrush}" />
-        <Setter Property="TextBoxBase.CaretBrush" Value="{DynamicResource TextInput.CaretBrush}" />
-        <Setter Property="Control.VerticalContentAlignment" Value="Center" />
-        <Setter Property="FrameworkElement.FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Control.FontFamily" Value="{DynamicResource DefaultFont}" />
-        <Setter Property="FrameworkElement.MinHeight" Value="20" />
-        <Setter Property="FrameworkElement.ContextMenu" Value="{DynamicResource TextBoxContextMenu}" />
-        <Setter Property="TextBoxBase.IsReadOnly" Value="True" />
-        <Setter Property="Control.Padding" Value="4,0" />
-        <Setter Property="UIElement.SnapsToDevicePixels" Value="True" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource SelectionBrush}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource CaretBrush}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FontFamily" Value="{DynamicResource DefaultFont}" />
+        <Setter Property="MinHeight" Value="20" />
+        <Setter Property="ContextMenu" Value="{DynamicResource TextBoxContextMenu}" />
+        <Setter Property="IsReadOnly" Value="True" />
+        <Setter Property="Padding" Value="4,0" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Validation.ErrorTemplate" Value="{DynamicResource ErrorValidationTemplate}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -39,19 +39,13 @@
                         <Border
                             x:Name="Border"
                             Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding Control.BorderBrush}"
-                            BorderThickness="{TemplateBinding Control.BorderThickness}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="4"
-                            SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                         <Grid x:Name="PART_InnerGrid">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition x:Name="TextColumn" Width="*" />
-                                <ColumnDefinition x:Name="ErrorColumn" Width="Auto" />
-                                <ColumnDefinition x:Name="ButtonColumn" Width="Auto" />
-                            </Grid.ColumnDefinitions>
                             <ScrollViewer
                                 x:Name="PART_ContentHost"
-                                Grid.Column="0"
                                 VerticalAlignment="Stretch"
                                 Background="{x:Null}"
                                 BorderThickness="0"
@@ -59,44 +53,32 @@
                                 Visibility="Collapsed" />
                             <TextBlock
                                 x:Name="PART_ReadOnlyText"
-                                Grid.Column="0"
-                                Margin="{TemplateBinding Control.Padding}"
+                                Margin="{TemplateBinding Padding}"
                                 Padding="2,0"
-                                HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
-                                VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                 Background="{x:Null}"
-                                Foreground="{TemplateBinding Control.Foreground}"
-                                Text="{TemplateBinding TextBox.Text}"
-                                TextAlignment="{TemplateBinding TextBox.TextAlignment}"
-                                TextDecorations="{TemplateBinding TextBox.TextDecorations}"
+                                Foreground="{TemplateBinding Foreground}"
+                                Text="{TemplateBinding Text}"
+                                TextAlignment="{TemplateBinding TextAlignment}"
+                                TextDecorations="{TemplateBinding TextDecorations}"
                                 TextTrimming="WordEllipsis"
-                                TextWrapping="{TemplateBinding TextBox.TextWrapping}" />
+                                TextWrapping="{TemplateBinding TextWrapping}" />
                         </Grid>
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="local:EditableTextBox.InEditMode" Value="True">
-                            <Setter TargetName="PART_ContentHost" Property="UIElement.Visibility" Value="Visible" />
-                            <Setter TargetName="PART_ReadOnlyText" Property="UIElement.Visibility" Value="Collapsed" />
-                            <Setter Property="TextBoxBase.IsReadOnly" Value="False" />
-                            <Setter Property="TextBox.TextDecorations" Value="{x:Null}" />
+                        <Trigger Property="InEditMode" Value="True">
+                            <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="PART_ReadOnlyText" Property="Visibility" Value="Collapsed" />
+                            <Setter Property="IsReadOnly" Value="False" />
+                            <Setter Property="TextDecorations" Value="{x:Null}" />
+                            <Setter Property="BorderThickness" Value="1" />
+                            <Setter Property="BorderBrush" Value="#FF0A6EFF" />
                         </Trigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="local:EditableTextBox.EditOnMouseDown" Value="False" />
-                                <Condition Property="local:EditableTextBox.InEditMode" Value="False" />
-                            </MultiTrigger.Conditions>
-                            <Setter Property="UIElement.IsHitTestVisible" Value="False" />
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="UIElement.IsMouseOver" Value="True" />
-                                <Condition Property="local:EditableTextBox.InEditMode" Value="False" />
-                            </MultiTrigger.Conditions>
-                            <Setter TargetName="Border" Property="Border.BorderBrush" Value="Yellow" />
-                        </MultiTrigger>
-
+                        <Trigger Property="InEditMode" Value="False">
+                            <Setter Property="IsHitTestVisible" Value="False" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
-
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

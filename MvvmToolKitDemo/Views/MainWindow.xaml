@@ -30,6 +30,7 @@
 
     <Grid>
         <ui:TreeListView
+            x:Name="treeListView"
             ui:TreeViewAssist.ItemHoverBackground="#FFEDEFF1"
             ui:TreeViewAssist.ItemSelectedBackground="#FFEDEFF1"
             ItemsSource="{Binding Groups}"
@@ -41,7 +42,6 @@
                         <ui:EditableTextBox
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
-                            TextAlignment="Center"
                             TextTrimming="CharacterEllipsis">
                             <ui:EditableTextBox.Text>
                                 <Binding Path="Name" UpdateSourceTrigger="PropertyChanged">
@@ -70,6 +70,11 @@
                     </Border>
                 </DataTemplate>
             </ui:TreeListView.Resources>
+            <ui:TreeListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Click="Rename" Header="重命名" />
+                </ContextMenu>
+            </ui:TreeListView.ContextMenu>
         </ui:TreeListView>
     </Grid>
 </Window>
