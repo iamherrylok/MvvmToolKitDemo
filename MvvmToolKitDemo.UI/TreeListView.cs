@@ -21,7 +21,6 @@ namespace MvvmToolKitDemo.UI
             SelectedItemsProperty = DependencyProperty.Register(nameof(SelectedItems), typeof(ObservableCollection<object>), typeof(TreeListView), new PropertyMetadata(new ObservableCollection<object>(Array.Empty<object>())));
         }
 
-
         public double LevelIndentSize
         {
             get => (double)GetValue(LevelIndentSizeProperty);
@@ -88,7 +87,7 @@ namespace MvvmToolKitDemo.UI
             base.OnSelectionChanged(e);
 
             // TODO: selectedItems should be clear or not if itemsource changed
-            if (e.RemovedItems.Count > 0)
+           if (e.RemovedItems.Count > 0)
             {
                 foreach (var removeItem in e.RemovedItems)
                     SelectedItems.Remove(removeItem);

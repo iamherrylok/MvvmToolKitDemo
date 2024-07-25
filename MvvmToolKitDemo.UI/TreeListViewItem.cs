@@ -106,9 +106,6 @@ namespace MvvmToolKitDemo.UI
             Level = level;
             TreeListView = treeListView;
 
-            //NB: This can occur as part of TreeListView.PrepareContainerForItemOverride
-            //Because this can trigger additional collection changes we enqueue the operation
-            //to occur after the current operation has completed.
             Dispatcher.BeginInvoke(() =>
             {
                 if (GetTemplate() is HierarchicalDataTemplate { ItemsSource: { } itemsSourceBinding })
@@ -118,12 +115,11 @@ namespace MvvmToolKitDemo.UI
                 IsExpanded = isExpanded;
             });
 
-            DataTemplate? GetTemplate()
-            {
-                return ContentTemplate ??
-                       ContentTemplateSelector?.SelectTemplate(item, this) ??
-                       ContentPresenter?.Template;
-            }
+            DataTemplate? GetTemplate() 
+                => 
+                ContentTemplate ??
+                   ContentTemplateSelector?.SelectTemplate(item, this) ??
+                   ContentPresenter?.Template;
         }
 
         public override void OnApplyTemplate()

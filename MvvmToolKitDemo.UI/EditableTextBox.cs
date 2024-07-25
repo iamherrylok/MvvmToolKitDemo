@@ -147,10 +147,12 @@ namespace MvvmToolKitDemo.UI
         {
             base.OnLostKeyboardFocus(e);
 
+            if (InputManager.Current.IsInMenuMode)
+                return;
+
             if ((ContextMenu != null && ContextMenu.IsOpen) || !CancelOnValidationError || Accept())
                 return;
 
-            Debug.WriteLine("Cancel");
             Cancel();
         }
 
@@ -176,7 +178,6 @@ namespace MvvmToolKitDemo.UI
 
         private static void OnInEditModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            Debug.WriteLine(e.NewValue);
             ((EditableTextBox)d).OnInEditModeChanged((bool)e.NewValue);
         }
 
@@ -229,6 +230,7 @@ namespace MvvmToolKitDemo.UI
                     Accept();
 
                 RestoreFocusTarget?.Focus();
+                RaiseEvent(new RoutedEventArgs(EditEndingEvent, this));
             }
         }
 
@@ -278,6 +280,7 @@ namespace MvvmToolKitDemo.UI
         {
             if (!InEditMode)
                 return;
+
             SetCurrentValue(InEditModeProperty, false);
         }
 

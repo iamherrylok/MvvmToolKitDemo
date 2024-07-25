@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Windows;
 
 namespace MvvmToolKitDemo.Models
 {
@@ -10,14 +12,24 @@ namespace MvvmToolKitDemo.Models
         private string? _name;
 
         [ObservableProperty]
+        private string? _display;
+
+        [ObservableProperty]
         private ObservableCollection<Item> _items = [];
+
+        [ObservableProperty]
+        private bool _isSelected = true;
+
+        [ObservableProperty]
+        private bool _isExpanded = true;
 
         public Group(string name)
         {
-            _name = $"GroupGroupGroupGroupGroupGroupGroup {name}";
+            Name = $"Group {name}";
+            Display = $"组 {name}";
 
-            for (int i = 0; i < 20; i++)
-                _items.Add(new Item(i.ToString()));
+            for (int i = 0; i < 200; i++)
+                Items.Add(new Item(i.ToString()));
         }
 
         public string this[string columnName]
@@ -36,5 +48,11 @@ namespace MvvmToolKitDemo.Models
         }
 
         public string Error { get; set; } = default!;
+
+        [RelayCommand]
+        public void ChangeItemName()
+        {
+            MessageBox.Show("fdsafdsa");
+        }
     }
 }
